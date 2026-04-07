@@ -16,6 +16,7 @@ interface MinimalistHeroProps {
     part1: string;
     part2: string;
   };
+  ctaHref?: string;
   socialLinks?: { icon: LucideIcon; href: string }[];
   locationText?: string;
   className?: string;
@@ -44,6 +45,7 @@ export const MinimalistHero = ({
   imageSrc,
   imageAlt,
   overlayText,
+  ctaHref,
   socialLinks,
   locationText,
   className,
@@ -95,9 +97,19 @@ export const MinimalistHero = ({
           className="z-20 order-2 md:order-1 text-center md:text-left"
         >
           <p className="mx-auto max-w-xs text-sm leading-relaxed text-foreground/80 md:mx-0">{mainText}</p>
-          <a href={readMoreLink} className="mt-4 inline-block text-sm font-medium text-foreground underline decoration-from-font">
-            Read More
-          </a>
+          <div className="mt-4 flex items-center gap-4 justify-center md:justify-start">
+            {ctaHref && (
+              <a
+                href={ctaHref}
+                className="inline-block rounded-lg bg-foreground px-5 py-2.5 text-xs font-semibold text-background transition-opacity hover:opacity-80"
+              >
+                Get Started
+              </a>
+            )}
+            <a href={readMoreLink} className="inline-block text-sm font-medium text-foreground underline decoration-from-font">
+              Read More
+            </a>
+          </div>
         </motion.div>
 
         {/* Center Image with Circle */}

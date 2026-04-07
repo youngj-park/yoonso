@@ -15,6 +15,7 @@ export default function Home() {
         logoText="UMUSIC"
         navLinks={navLinks}
         mainText="Generate royalty-free music for your YouTube videos with AI. Create the perfect soundtrack in seconds."
+        ctaHref="/auth"
         readMoreLink="#"
         imageSrc="https://ik.imagekit.io/fpxbgsota/image%2013.png?updatedAt=1753531863793"
         imageAlt="Portrait"

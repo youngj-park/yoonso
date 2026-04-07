@@ -1,27 +1,61 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { useAuth } from '@/context/AuthContext';
 
 export default function AuthPage() {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.replace('/workspace');
+    }
+  }, [user, authLoading, router]);
+
+  // Reset loading when page is restored from bfcache (browser back button after OAuth redirect)
+  useEffect(() => {
+    setLoading(false);
+    const handlePageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) setLoading(false);
+    };
+    window.addEventListener('pageshow', handlePageShow);
+    return () => window.removeEventListener('pageshow', handlePageShow);
+  }, []);
 
   async function handleGoogleLogin() {
+    setError(null);
     setLoading(true);
     const supabase = createClient();
-    await supabase.auth.signInWithOAuth({
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
       },
     });
-    setLoading(false);
+    if (error) {
+      setError(error.message);
+      setLoading(false);
+    }
   }
   return (
     <main
       className="relative flex min-h-screen w-full items-center justify-center"
       style={{ backgroundColor: '#171717' }}
     >
+      {/* Top-left logo */}
+      <a
+        href="/"
+        className="absolute top-6 left-8 text-sm font-black tracking-widest transition-opacity hover:opacity-60"
+        style={{ color: '#ffffff' }}
+      >
+        uMusic
+      </a>
+
       {/* Glass card */}
       <div
         className="flex flex-col items-center gap-6 w-full max-w-xs px-8 py-10 rounded-2xl"
