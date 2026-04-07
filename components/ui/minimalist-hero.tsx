@@ -9,7 +9,7 @@ interface MinimalistHeroProps {
   logoText: string;
   navLinks: { label: string; href: string }[];
   mainText: string;
-  readMoreLink: string;
+
   imageSrc: string;
   imageAlt: string;
   overlayText: {
@@ -17,6 +17,7 @@ interface MinimalistHeroProps {
     part2: string;
   };
   ctaHref?: string;
+  signInHref?: string;
   socialLinks?: { icon: LucideIcon; href: string }[];
   locationText?: string;
   className?: string;
@@ -41,11 +42,12 @@ export const MinimalistHero = ({
   logoText,
   navLinks,
   mainText,
-  readMoreLink,
+
   imageSrc,
   imageAlt,
   overlayText,
   ctaHref,
+  signInHref,
   socialLinks,
   locationText,
   className,
@@ -73,6 +75,14 @@ export const MinimalistHero = ({
               {link.label}
             </NavLink>
           ))}
+          {signInHref && (
+            <a
+              href={signInHref}
+              className="rounded-lg bg-foreground px-4 py-2 text-xs font-semibold tracking-widest text-background transition-opacity hover:opacity-80"
+            >
+              SIGN IN
+            </a>
+          )}
         </div>
         <motion.button
           initial={{ opacity: 0, x: 20 }}
@@ -106,9 +116,6 @@ export const MinimalistHero = ({
                 Get Started
               </a>
             )}
-            <a href={readMoreLink} className="inline-block text-sm font-medium text-foreground underline decoration-from-font">
-              Read More
-            </a>
           </div>
         </motion.div>
 

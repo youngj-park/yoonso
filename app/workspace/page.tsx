@@ -1,53 +1,152 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
+import { PlayerProvider } from '@/context/PlayerContext';
 import WorkspaceNavbar from '@/components/workspace/WorkspaceNavbar';
 import { PromptInputBox } from '@/components/workspace/PromptInputBox';
+import type { MusicGenOptions } from '@/components/workspace/PromptInputBox';
+import MusicList, { type Music } from '@/components/workspace/MusicList';
+import MusicLibraryPanel from '@/components/workspace/MusicLibraryPanel';
+import MusicPlayer from '@/components/workspace/MusicPlayer';
 
-export default function WorkspacePage() {
+function GeneratingIndicator() {
+  return (
+    <div className="flex flex-1 items-center justify-center">
+      <div className="flex space-x-2">
+        {[0, 0.3, 0.6].map((delay, i) => (
+          <motion.div
+            key={i}
+            className="h-3 w-3 rounded-full"
+            style={{ background: 'rgba(255,255,255,0.7)' }}
+            animate={{ scale: [1, 1.5, 1], opacity: [0.4, 1, 0.4] }}
+            transition={{ duration: 1, ease: 'easeInOut', repeat: Infinity, delay }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ErrorIndicator() {
+  return (
+    <div className="flex flex-1 items-center justify-center">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" strokeLinecap="round">
+        <line x1="18" y1="6" x2="6" y2="18" />
+        <line x1="6" y1="6" x2="18" y2="18" />
+      </svg>
+    </div>
+  );
+}
+
+function WorkspaceContent() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const [musics, setMusics] = useState<Music[]>([]);
+  const [generating, setGenerating] = useState(false);
+  const [genError, setGenError] = useState(false);
+  const [libraryOpen, setLibraryOpen] = useState(false);
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.replace('/auth');
-    }
+    if (!loading && !user) router.replace('/auth');
   }, [user, loading, router]);
 
+  async function handleSend(prompt: string, options: MusicGenOptions) {
+    if (!prompt.trim() || generating) return;
+    setGenerating(true);
+    setGenError(false);
+
+    try {
+      const res = await fetch('/api/generate-music', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt, duration: options.duration, outputFormat: options.outputFormat }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.music) throw new Error(json.detail ?? json.error ?? 'Generation failed');
+
+      setMusics((prev) => [json.music as Music, ...prev]);
+    } catch {
+      setGenError(true);
+    } finally {
+      setGenerating(false);
+    }
+  }
+
   if (loading || !user) {
-    return (
-      <main
-        className="flex min-h-screen w-full"
-        style={{ backgroundColor: '#171717' }}
-      />
-    );
+    return <main className="flex min-h-screen w-full" style={{ backgroundColor: '#171717' }} />;
   }
 
   return (
-    <main
-      className="flex min-h-screen w-full flex-col"
-      style={{ backgroundColor: '#171717' }}
-    >
+    <main className="flex h-screen w-full flex-col overflow-hidden" style={{ backgroundColor: '#171717' }}>
       <WorkspaceNavbar />
 
-      {/* Content area */}
-      <div className="flex flex-1 items-center justify-center">
-        <p
-          className="text-sm"
-          style={{ color: 'rgba(255,255,255,0.2)' }}
+      <div className="flex flex-1 min-h-0 overflow-hidden">
+        {/* 왼쪽 사이드바 탭 */}
+        <div
+          className="flex flex-col flex-shrink-0 items-center py-4 gap-2"
+          style={{ width: '44px', borderRight: '1px solid rgba(255,255,255,0.07)' }}
         >
-          Your workspace
-        </p>
-      </div>
+          <button
+            type="button"
+            onClick={() => setLibraryOpen((v) => !v)}
+            className="flex flex-col items-center justify-center gap-1 rounded-lg px-1 py-2 transition-colors"
+            style={{
+              background: libraryOpen ? 'rgba(255,255,255,0.08)' : 'transparent',
+              color: libraryOpen ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.3)',
+            }}
+            title="Library"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 18V5l12-2v13" />
+              <circle cx="6" cy="18" r="3" />
+              <circle cx="18" cy="16" r="3" />
+            </svg>
+            <span style={{ fontSize: '9px', letterSpacing: '0.05em', fontWeight: 600 }}>LIST</span>
+          </button>
+        </div>
 
-      {/* Fixed bottom prompt */}
-      <div className="sticky bottom-0 w-full px-6 pb-6 pt-2">
-        <div className="mx-auto max-w-3xl">
-          <PromptInputBox placeholder="Describe the music you want to create..." />
+        {/* 라이브러리 패널 */}
+        <MusicLibraryPanel open={libraryOpen} />
+
+        {/* 메인 콘텐츠 */}
+        <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
+          <div className="flex flex-1 flex-col overflow-y-auto px-6 py-6 min-h-0">
+            <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col">
+              {generating ? (
+                <GeneratingIndicator />
+              ) : genError ? (
+                <ErrorIndicator />
+              ) : (
+                <MusicList musics={musics} />
+              )}
+            </div>
+          </div>
+
+          <div className="w-full flex-shrink-0 px-6 pb-6 pt-2">
+            <div className="mx-auto max-w-3xl">
+              <PromptInputBox
+                placeholder="Describe the music you want to create..."
+                isLoading={generating}
+                onSend={handleSend}
+              />
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* 하단 뮤직 플레이어 */}
+      <MusicPlayer />
     </main>
+  );
+}
+
+export default function WorkspacePage() {
+  return (
+    <PlayerProvider>
+      <WorkspaceContent />
+    </PlayerProvider>
   );
 }

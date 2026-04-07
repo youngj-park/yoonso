@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { createClient } from '@/lib/supabase/client';
 
@@ -18,9 +19,12 @@ export default function WorkspaceNavbar() {
     closeTimer.current = setTimeout(() => setPopoverOpen(false), 120);
   }
 
+  const router = useRouter();
+
   async function handleSignOut() {
     const supabase = createClient();
     await supabase.auth.signOut();
+    router.replace('/');
   }
 
   const avatarUrl = user?.user_metadata?.avatar_url as string | undefined;
@@ -32,12 +36,14 @@ export default function WorkspaceNavbar() {
       style={{ background: 'transparent' }}
     >
       {/* Logo */}
-      <span
-        className="text-xl font-black tracking-widest select-none"
-        style={{ color: '#ffffff' }}
+      <button
+        type="button"
+        onClick={() => router.push('/')}
+        className="text-xl font-black tracking-widest select-none transition-opacity hover:opacity-70"
+        style={{ color: '#ffffff', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
       >
         uMusic
-      </span>
+      </button>
 
       {/* Search — liquid glass */}
       <div
