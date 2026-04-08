@@ -84,24 +84,26 @@ export const MinimalistHero = ({
       </header>
 
       {/* Mobile Layout */}
-      <div className="flex flex-col flex-1 md:hidden">
-        {/* Image */}
-        <div className="relative flex justify-center items-end pt-4" style={{ height: '55vw', maxHeight: '280px' }}>
+      <div className="flex flex-col md:hidden" style={{ minHeight: 'calc(100dvh - 64px)' }}>
+        {/* Image 영역: 화면 상단 40% */}
+        <div className="relative flex flex-1 justify-center items-end overflow-hidden" style={{ maxHeight: '42vh' }}>
+          {/* 원형 배경 */}
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
             className="absolute bottom-0 left-1/2 -translate-x-1/2 rounded-full bg-yellow-400/90"
-            style={{ width: '52vw', height: '52vw', maxWidth: '240px', maxHeight: '240px' }}
+            style={{ width: '28vw', height: '28vw' }}
           />
+          {/* 인물 이미지 */}
           <motion.img
             src={imageSrc}
             alt={imageAlt}
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.4 }}
-            className="relative z-10 object-contain"
-            style={{ height: '62vw', maxHeight: '300px', width: 'auto' }}
+            className="relative z-10 object-contain object-bottom"
+            style={{ height: '20vh', width: 'auto', maxWidth: '30vw' }}
             onError={(e) => {
               const t = e.target as HTMLImageElement;
               t.onerror = null;
@@ -110,37 +112,39 @@ export const MinimalistHero = ({
           />
         </div>
 
-        {/* Big text */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
-          className="px-6 pt-6"
-        >
-          <h1 className="text-[18vw] font-extrabold leading-none text-foreground" style={{ letterSpacing: '-0.03em' }}>
+        {/* 텍스트 + CTA */}
+        <div className="flex flex-col justify-between px-6 pt-5 pb-10 gap-4">
+          <motion.h1
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.7 }}
+            className="font-extrabold leading-none text-foreground"
+            style={{ fontSize: 'clamp(3rem, 19vw, 5.5rem)', letterSpacing: '-0.03em' }}
+          >
             {overlayText.part1}
             <br />
             {overlayText.part2}
-          </h1>
-        </motion.div>
+          </motion.h1>
 
-        {/* Description + CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 1 }}
-          className="px-6 pt-4 pb-10"
-        >
-          <p className="text-sm leading-relaxed text-foreground/70 max-w-sm">{mainText}</p>
-          {ctaHref && (
-            <a
-              href={ctaHref}
-              className="mt-5 inline-block rounded-lg bg-foreground px-6 py-3 text-sm font-semibold text-background transition-opacity hover:opacity-80"
-            >
-              Get Started
-            </a>
-          )}
-        </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.9 }}
+            className="flex flex-col gap-4"
+          >
+            <p className="text-sm leading-relaxed" style={{ color: 'rgba(237,237,237,0.6)', maxWidth: '30ch' }}>
+              {mainText}
+            </p>
+            {ctaHref && (
+              <a
+                href={ctaHref}
+                className="self-start rounded-xl bg-foreground px-6 py-3 text-sm font-semibold text-background transition-opacity hover:opacity-80"
+              >
+                Get Started
+              </a>
+            )}
+          </motion.div>
+        </div>
       </div>
 
       {/* Desktop Layout */}
@@ -172,13 +176,13 @@ export const MinimalistHero = ({
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
             className="absolute z-0 rounded-full bg-yellow-400/90"
-            style={{ width: 'min(38vw, 480px)', height: 'min(38vw, 480px)' }}
+            style={{ width: 'min(19vw, 240px)', height: 'min(19vw, 240px)' }}
           />
           <motion.img
             src={imageSrc}
             alt={imageAlt}
             className="relative z-10 h-auto object-cover"
-            style={{ width: 'min(28vw, 340px)' }}
+            style={{ width: 'min(14vw, 170px)' }}
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.4 }}
