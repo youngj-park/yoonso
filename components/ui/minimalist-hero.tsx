@@ -84,26 +84,24 @@ export const MinimalistHero = ({
       </header>
 
       {/* Mobile Layout */}
-      <div className="flex flex-col md:hidden" style={{ minHeight: 'calc(100dvh - 64px)' }}>
-        {/* Image 영역: 화면 상단 40% */}
-        <div className="relative flex justify-center items-end overflow-hidden" style={{ height: '30vh' }}>
-          {/* 원형 배경 */}
+      <div className="flex flex-col md:hidden overflow-hidden" style={{ height: 'calc(100dvh - 64px)' }}>
+        {/* 이미지 영역: 전체의 42% */}
+        <div className="relative flex-none flex justify-center items-end overflow-hidden" style={{ height: '42%' }}>
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
             className="absolute bottom-0 left-1/2 -translate-x-1/2 rounded-full bg-yellow-400/90"
-            style={{ width: '30vh', height: '30vh' }}
+            style={{ width: '55vw', height: '55vw' }}
           />
-          {/* 인물 이미지 */}
           <motion.img
             src={imageSrc}
             alt={imageAlt}
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.4 }}
-            className="relative z-10 object-contain object-bottom"
-            style={{ height: '30vh', width: 'auto' }}
+            className="relative z-10"
+            style={{ height: '100%', width: 'auto', objectFit: 'contain', objectPosition: 'bottom' }}
             onError={(e) => {
               const t = e.target as HTMLImageElement;
               t.onerror = null;
@@ -112,14 +110,14 @@ export const MinimalistHero = ({
           />
         </div>
 
-        {/* 텍스트 + CTA */}
-        <div className="flex flex-col justify-between px-6 pt-5 pb-10 gap-4">
+        {/* 텍스트 + CTA: 나머지 58% */}
+        <div className="flex flex-1 flex-col justify-between px-6 py-5 overflow-hidden">
           <motion.h1
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.7 }}
             className="font-extrabold leading-none text-foreground"
-            style={{ fontSize: 'clamp(3rem, 19vw, 5.5rem)', letterSpacing: '-0.03em' }}
+            style={{ fontSize: 'clamp(2.8rem, 18vw, 5rem)', letterSpacing: '-0.03em' }}
           >
             {overlayText.part1}
             <br />
