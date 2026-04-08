@@ -30,13 +30,17 @@ function GeneratingIndicator() {
   );
 }
 
-function ErrorIndicator() {
+function ErrorIndicator({ message }: { message: string }) {
   return (
     <div className="flex flex-1 items-center justify-center">
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" strokeLinecap="round">
-        <line x1="18" y1="6" x2="6" y2="18" />
-        <line x1="6" y1="6" x2="18" y2="18" />
-      </svg>
+      <div className="flex flex-col items-center gap-3 max-w-sm text-center">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,80,80,0.7)" strokeWidth="1.5" strokeLinecap="round">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+        <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)' }}>{message}</p>
+      </div>
     </div>
   );
 }
@@ -46,7 +50,7 @@ function WorkspaceContent() {
   const router = useRouter();
   const [musics, setMusics] = useState<Music[]>([]);
   const [generating, setGenerating] = useState(false);
-  const [genError, setGenError] = useState(false);
+  const [genError, setGenError] = useState<string | null>(null);
   const [libraryOpen, setLibraryOpen] = useState(false);
 
   useEffect(() => {
@@ -56,7 +60,7 @@ function WorkspaceContent() {
   async function handleSend(prompt: string, options: MusicGenOptions) {
     if (!prompt.trim() || generating) return;
     setGenerating(true);
-    setGenError(false);
+    setGenError(null);
 
     try {
       const res = await fetch('/api/generate-music', {
@@ -68,8 +72,8 @@ function WorkspaceContent() {
       if (!res.ok || !json.music) throw new Error(json.detail ?? json.error ?? 'Generation failed');
 
       setMusics((prev) => [json.music as Music, ...prev]);
-    } catch {
-      setGenError(true);
+    } catch (err) {
+      setGenError(err instanceof Error ? err.message : 'Music generation failed');
     } finally {
       setGenerating(false);
     }
@@ -118,7 +122,7 @@ function WorkspaceContent() {
               {generating ? (
                 <GeneratingIndicator />
               ) : genError ? (
-                <ErrorIndicator />
+                <ErrorIndicator message={genError} />
               ) : (
                 <MusicList musics={musics} />
               )}

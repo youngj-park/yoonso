@@ -124,28 +124,7 @@ interface MusicListProps {
 export default function MusicList({ musics, isLoading }: MusicListProps) {
   if (isLoading) return <div className="flex flex-1 flex-col" />;
 
-  if (musics.length === 0) {
-    return (
-      <div className="flex flex-1 flex-col items-center justify-center gap-4">
-        <div
-          className="flex h-16 w-16 items-center justify-center rounded-full"
-          style={{ background: 'rgba(139,92,246,0.18)' }}
-        >
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-            <path d="M9 18V5l12-2v13" stroke="#a78bfa" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-            <circle cx="6" cy="18" r="3" stroke="#a78bfa" strokeWidth="1.8" />
-            <circle cx="18" cy="16" r="3" stroke="#a78bfa" strokeWidth="1.8" />
-          </svg>
-        </div>
-        <p className="text-base font-semibold" style={{ color: '#ffffff' }}>Create AI Music</p>
-        <p className="text-center text-sm leading-relaxed max-w-xs" style={{ color: 'rgba(255,255,255,0.32)' }}>
-          Enter lyrics or describe the music you want to create.
-          <br />
-          Our AI will generate a unique song just for you.
-        </p>
-      </div>
-    );
-  }
+  if (musics.length === 0) return <div className="flex flex-1" />;
 
   return (
     <div className="flex flex-col gap-2 w-full">
