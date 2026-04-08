@@ -1,13 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 
-export default function AuthPage() {
-  const [loading, setLoading] = useState(false);
+function AuthForm() {
   const searchParams = useSearchParams();
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(searchParams.get('error'));
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
@@ -18,7 +18,6 @@ export default function AuthPage() {
     }
   }, [user, authLoading, router]);
 
-  // Reset loading when page is restored from bfcache (browser back button after OAuth redirect)
   useEffect(() => {
     setLoading(false);
     const handlePageShow = (e: PageTransitionEvent) => {
@@ -43,6 +42,7 @@ export default function AuthPage() {
       setLoading(false);
     }
   }
+
   return (
     <main
       className="relative flex min-h-screen w-full items-center justify-center"
@@ -67,38 +67,29 @@ export default function AuthPage() {
           WebkitBackdropFilter: 'blur(20px)',
         }}
       >
-        {/* Logo */}
         <div className="flex flex-col items-center gap-1.5">
-          <span
-            className="text-2xl font-black tracking-widest"
-            style={{ color: '#ffffff' }}
-          >
+          <span className="text-2xl font-black tracking-widest" style={{ color: '#ffffff' }}>
             uMusic
           </span>
-          <p
-            className="text-center text-xs leading-relaxed"
-            style={{ color: 'rgba(255,255,255,0.4)' }}
-          >
+          <p className="text-center text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.4)' }}>
             AI-generated music for your YouTube videos
           </p>
         </div>
 
-        {/* Google Sign-in Button */}
+        {error && (
+          <p className="w-full rounded-lg px-3 py-2 text-xs text-center" style={{ background: 'rgba(239,68,68,0.12)', color: '#f87171' }}>
+            {error}
+          </p>
+        )}
+
         <button
           type="button"
           className="flex w-full items-center justify-center gap-2.5 rounded-lg px-5 py-3 text-xs font-semibold transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
-          style={{
-            backgroundColor: '#ffffff',
-            color: '#171717',
-          }}
+          style={{ backgroundColor: '#ffffff', color: '#171717' }}
           onClick={handleGoogleLogin}
           disabled={loading}
-          onMouseEnter={(e) => {
-            if (!loading) (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#e5e5e5';
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#ffffff';
-          }}
+          onMouseEnter={(e) => { if (!loading) (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#e5e5e5'; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#ffffff'; }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -109,22 +100,21 @@ export default function AuthPage() {
           Continue with Google
         </button>
 
-        {/* Terms */}
-        <p
-          className="text-center leading-relaxed"
-          style={{ fontSize: '10px', color: 'rgba(255,255,255,0.25)' }}
-        >
+        <p className="text-center leading-relaxed" style={{ fontSize: '10px', color: 'rgba(255,255,255,0.25)' }}>
           By continuing, you agree to our{' '}
-          <a href="#" className="underline underline-offset-2 hover:text-white transition-colors" style={{ color: 'rgba(255,255,255,0.4)' }}>
-            Terms
-          </a>{' '}
-          and{' '}
-          <a href="#" className="underline underline-offset-2 hover:text-white transition-colors" style={{ color: 'rgba(255,255,255,0.4)' }}>
-            Privacy Policy
-          </a>
-          .
+          <a href="#" className="underline underline-offset-2 hover:text-white transition-colors" style={{ color: 'rgba(255,255,255,0.4)' }}>Terms</a>
+          {' '}and{' '}
+          <a href="#" className="underline underline-offset-2 hover:text-white transition-colors" style={{ color: 'rgba(255,255,255,0.4)' }}>Privacy Policy</a>.
         </p>
       </div>
     </main>
+  );
+}
+
+export default function AuthPage() {
+  return (
+    <Suspense>
+      <AuthForm />
+    </Suspense>
   );
 }
