@@ -86,14 +86,14 @@ export const MinimalistHero = ({
       {/* Mobile Layout */}
       <div className="flex flex-col md:hidden" style={{ minHeight: 'calc(100dvh - 64px)' }}>
         {/* Image 영역: 화면 상단 40% */}
-        <div className="relative flex flex-1 justify-center items-end overflow-hidden" style={{ maxHeight: '42vh' }}>
+        <div className="relative flex justify-center items-end overflow-hidden" style={{ height: '30vh' }}>
           {/* 원형 배경 */}
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
             className="absolute bottom-0 left-1/2 -translate-x-1/2 rounded-full bg-yellow-400/90"
-            style={{ width: '28vw', height: '28vw' }}
+            style={{ width: '30vh', height: '30vh' }}
           />
           {/* 인물 이미지 */}
           <motion.img
@@ -103,7 +103,7 @@ export const MinimalistHero = ({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.4 }}
             className="relative z-10 object-contain object-bottom"
-            style={{ height: '20vh', width: 'auto', maxWidth: '30vw' }}
+            style={{ height: '30vh', width: 'auto' }}
             onError={(e) => {
               const t = e.target as HTMLImageElement;
               t.onerror = null;
